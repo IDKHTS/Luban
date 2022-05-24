@@ -1194,6 +1194,10 @@
     "key-Workspace/WifiTransport-G-code Files": "G-code Files",
     "key-Workspace/WifiTransport-Sending File": "Send to Device",
     "key-Workspace/WifiTransport-Sending file. Please wait…": "Sending file. Please wait…",
+    "key-Workspace/WifiTransport/LaserStartModal-Disable reason": "Disable reason",
+
+
+
     "key-Workspace/WifiTransport-Your file was successfully sent. Receive it on the Touchscreen.": "Your file was successfully sent. Receive it on the Touchscreen.",
     "key-Workspace/Window-10W Laser Attitude detection": "Toolhead Not Installed Correctly",
     "key-Workspace/Window-10W Laser Attitude detection Info": "The Toolhead is not vertically downward. Please adjust the Toolhead.",
