@@ -8,6 +8,7 @@ import { NumberInput as Input } from '../../components/Input';
 import i18n from '../../../lib/i18n';
 import { actions as machineActions } from '../../../flux/machine';
 import TipTrigger from '../../components/TipTrigger';
+import LaserLevelingMode from './LaserLevelingMode';
 
 
 
@@ -31,10 +32,7 @@ function LaserStartModal(props) {
     const handlerPowerLevel = value => typeof value.isHeightPower === 'undefined' || value.isHeightPower === isHeightPower;
     const handlerConnect = value => typeof value.isSerialConnect === 'undefined' || value.isSerialConnect === isSerialConnect;
     const handleDisable = v => v.disable && handlerAxis(v.disable) && handlerPowerLevel(v.disable) && handlerConnect(v.disable);
-
-    console.log(showStartModal, isHeightPower, isRotate);
-
-
+    const handleDisplay = v => v.display && handlerAxis(v.display) && handlerPowerLevel(v.display) && handlerConnect(v.display);
 
     const onChangeMaterialThickness = (value) => {
         if (value < 0) {
@@ -44,27 +42,32 @@ function LaserStartModal(props) {
         dispatch(machineActions.updateMaterialThickness(value));
     };
 
+
+    // i18n._('')
+    const { AUTO_MDOE, SEMI_AUTO_MODE, MANUAL_MODE } = LaserLevelingMode;
     const arry = [
         {
-            name: '自动测距（Auto Mode）',
-            description: '机器将会依据工作原点和工作区域，自动计算材料位置，然后移动执行头到相应位置测量材料厚度。机器根据测量到的材料厚度，自动调整激光高度。',
-            show: {
+            key: AUTO_MDOE,
+            name: i18n._('key-Workspace/LaserStartJob-auto_mode'),
+            description: i18n._('key-Workspace/LaserStartJob-auto_mode_description'),
+            display: {
             // mean: 'true' will show only can rotate status, false will only show no rotate status , undefined will show not matter what roate is
             // isRotate: true,
                 isHeightPower: true,
             // isSerialConnect: true,
             },
             disable: {
-                isRotate: true,
+                // isRotate: false,
                 // isHeightPower: true,
                 isSerialConnect: true,
             },
         },
         {
-            name: '输入材料厚度',
+            key: SEMI_AUTO_MODE,
+            name: i18n._('key-Workspace/LaserStartJob-semi_auto_mode'),
             description: () => (
                 <div className="">
-                    <div>测量并输入材料厚度。机器将会依据输入的材料厚度，自动调整激光高度。</div>
+                    <div> {i18n._('key-Workspace/LaserStartJob-semi_auto_mode_description')}</div>
                     <div className="sm-flex align-center margin-top-8">
                         <span className="">{i18n._('key-Workspace/LaserStartJob-3axis_start_job_material_thickness')}</span>
                         <Input
@@ -79,21 +82,22 @@ function LaserStartModal(props) {
                     </div>
                 </div>
             ),
-            show: {
+            display: {
             // isRotate: true,
             // isHeightPower: false,
             // isSerialConnect: true,
             },
             disable: {
-                // isRotate: true,
+                isRotate: true,
             // isHeightPower: true,
             // isSerialConnect: true,
             }
         },
         {
-            name: '按机器设置原点（Manual Mode）',
-            description: '手动控制执行头移动，直至激光光束在材料表面聚合成面积最小的光斑。点击开始作业，机器将会以当前高度作为激光高度。',
-            show: {
+            key: MANUAL_MODE,
+            name: i18n._('key-Workspace/LaserStartJob-manual_mode'),
+            description: i18n._('key-Workspace/LaserStartJob-manual_mode_description'),
+            display: {
             // isRotate: true,
             // isHeightPower: true,
             // isSerialConnect: true,
@@ -124,24 +128,24 @@ function LaserStartModal(props) {
                     value={selectedValue}
                 >
                     {arry.map(v => {
-                        console.log(v);
-                        return (
+                        // console.log(v);
+                        return handleDisplay(v) && (
                             <Radio
                                 style={{ borderRadius: '100%', marginTop: '16px' }}
                                 className="sm-flex-auto "
-                                value={v.name}
+                                value={v.key}
                                 disabled={handleDisable(v)}
                                 // checked={isLaserPrintAutoMode}
                                 // onChange={actions.onChangeLaserPrintMode}
                             >
                                 <TipTrigger
                                     placement="right"
-                                    title={i18n._('key-Workspace/WifiTransport/LaserStartModal-Disable reason')}
-                                    content={handleDisable(v) && (<span>tips</span>)}
+                                    title={i18n._('key-Workspace/LaserStartJob-Disable reason title')}
+                                    content={handleDisable(v) && (<span>{i18n._('key-Workspace/LaserStartJob-Disable reason')}</span>)}
                                 >
-                                    <span className={handleDisable(v) ? 'heading-3 color-black-5' : 'heading-3'}> { v.name } {i18n._('key-Workspace/LaserStartJob-3axis_start_job_auto_mode')} </span>
+                                    <span className={handleDisable(v) ? 'heading-3 color-black-5' : 'heading-3'}> { v.name }</span>
                                 </TipTrigger>
-                                {v.name === selectedValue && (<div className=" margin-top-8">{typeof v.description === 'string' ? v.description : v.description()} </div>)}
+                                {v.key === selectedValue && (<div className=" margin-top-8">{typeof v.description === 'string' ? v.description : v.description()} </div>)}
                             </Radio>
                         );
                     })}
@@ -153,7 +157,7 @@ function LaserStartModal(props) {
                     priority="level-two"
                     type="primary"
                     width="88px"
-                    onClick={() => { props.onConfirm(); props.onClose(); }}
+                    onClick={() => { props.onConfirm(selectedValue,); props.onClose(); }}
                 >
                     {i18n._('key-Workspace/LaserStartJob-button_start')}
                 </Button>

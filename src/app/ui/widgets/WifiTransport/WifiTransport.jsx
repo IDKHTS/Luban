@@ -38,6 +38,7 @@ import Checkbox from '../../components/Checkbox';
 import { NumberInput as Input } from '../../components/Input';
 import SecondaryToolbar from '../CanvasToolbar/SecondaryToolbar';
 import LaserStartModal from './LaserStartModal';
+import LaserLevelingMode from './LaserLevelingMode';
 
 const changeNameInput = [];
 const suffixLength = 7;
@@ -597,14 +598,31 @@ function WifiTransport({ widgetActions, controlActions }) {
                 </div>
             </div>
             <LaserStartModal
-                showStartModal={showStartModal || true}
+                showStartModal={showStartModal}
                 isHeightPower={toolHeadName === LEVEL_TWO_POWER_LASER_FOR_SM2}
                 isRotate={isRotate}
                 isSerialConnect={connectionType && connectionType === CONNECTION_TYPE_SERIAL}
                 onClose={() => setShowStartModal(false)}
-                onConfirm={() => actions.loadGcodeToWorkspace()}
+                onConfirm={(type) => {
+                    const { AUTO_MDOE, SEMI_AUTO_MODE, MANUAL_MODE } = LaserLevelingMode;
+                    switch (type) {
+                        case AUTO_MDOE:
+                            dispatch(machineActions.updateIsLaserPrintAutoMode(true));
+                            dispatch(machineActions.updateMaterialThickness(0));
+                            break;
+                        case SEMI_AUTO_MODE:
+                            dispatch(machineActions.updateIsLaserPrintAutoMode(false));
+                            break;
+                        case MANUAL_MODE:
+                            dispatch(machineActions.updateIsLaserPrintAutoMode(false));
+                            dispatch(machineActions.updateMaterialThickness(0));
+                            break;
+                        default:
+                    }
+                    actions.loadGcodeToWorkspace();
+                }}
             />
-            {showStartModal && (
+            {showStartModal && false && (
                 <Modal
                     centered
                     visible={showStartModal}

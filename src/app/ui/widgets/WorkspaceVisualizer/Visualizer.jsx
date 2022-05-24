@@ -282,6 +282,7 @@ class Visualizer extends PureComponent {
             const { workflowState } = this.state;
             if ((connectionType === CONNECTION_TYPE_WIFI && workflowStatus === WORKFLOW_STATUS_IDLE)
                 || (connectionType === CONNECTION_TYPE_SERIAL && workflowState === WORKFLOW_STATE_IDLE)) {
+                console.log(materialThickness, isLaserPrintAutoMode);
                 server.startServerGcode({
                     headType,
                     workflowStatus,
