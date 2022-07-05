@@ -21,7 +21,6 @@ import { CNC_MODULE, EMERGENCY_STOP_BUTTON, LASER_MODULE, MODULEID_TOOLHEAD_MAP,
 const log = logger('lib:SocketTCP');
 
 class SocketTCP extends SocketBASE {
-
     private client: net.Socket;
 
     private laserFocalLength: number = 0;
@@ -354,6 +353,30 @@ class SocketTCP extends SocketBASE {
     public abortLaserMaterialThickness = () => {
         // this.getLaserMaterialThicknessReq && this.getLaserMaterialThicknessReq.abort();
     };
+
+    // set z workoringin: laserFocalLength + platformHeight + laserMaterialThickness
+    public async laseAutoSetMaterialHeight(options) {
+        const { x, y, feedRate, toolHead } = options;
+        const { response, thickness } = await this.sacpClient.getLaserMaterialThickness({
+            token: '',
+            x,
+            y,
+            feedRate
+        });
+        const result = {
+            status: false,
+            thickness: 0
+        };
+        if (response.result !== 0) {
+            log.error(`useLaseAutoMode error: ${JSON.stringify(response)}`);
+            return;
+        }
+        result.status = true;
+        result.thickness = thickness;
+        this.thickness = result.thickness;
+
+        await this.laserSetWorkHeight({ toolHead: toolHead, materialThickness: this.thickness });
+    }
 
     public uploadGcodeFile = (gcodeFilePath: string, type: string, callback: (msg: string, data: boolean) => void) => {
         this.sacpClient.uploadFile(gcodeFilePath).then(({ response }) => {

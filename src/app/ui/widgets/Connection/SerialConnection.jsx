@@ -28,6 +28,7 @@ function SerialConnection() {
         airPurifier, airPurifierHasPower,
         heatedBedTemperature, laserCamera, workflowStatus, emergencyStopOnline, connectLoading
     } = useSelector(state => state.machine);
+    // console.log({ servers });
     const {
         toolHead, headType, series: seriesInfo
     } = useSelector(state => state?.workspace);
